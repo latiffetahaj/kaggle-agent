@@ -23,7 +23,7 @@ _search_wrapper = GoogleSearchAPIWrapper(
 @traceable(name="web_search")
 def web_search(query: str, k: int = 1) -> str:
     '''
-    Search the web for companies using the given tech stack and return structured JSON.
+    Search the web based on the query and return structured JSON.
     
     Args:
         query: The query to search for
