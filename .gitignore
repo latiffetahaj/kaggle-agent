@@ -1,0 +1,6 @@
+.env
+.venv
+.python-version
+logs/
+datasets/
+__pycache__/
