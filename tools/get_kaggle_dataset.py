@@ -66,18 +66,7 @@ def fetch_kaggle_dataset(kaggle_link: str, download_path: str = "./datasets") ->
         except Exception as e:
             error_msg = f"Failed to parse Kaggle link: {e}"
             logger.error(f"❌ {error_msg}")
-            return {
-                "status": "error",
-                "error_message": error_msg,
-                "dataset_slug": None,
-                "folder_path": None,
-                "csv_files": [],
-                "schemas": {},
-                "metadata": {
-                    "timestamp": datetime.now().isoformat(),
-                    "error_step": "url_parsing"
-                }
-            }
+            return _create_error_response(error_msg, "url_parsing")
         
         logger.info("📝 Step 3/4: Preparing download directory...")
         abs_download_path = os.path.abspath(download_path)
@@ -94,18 +83,7 @@ def fetch_kaggle_dataset(kaggle_link: str, download_path: str = "./datasets") ->
             logger.error(f"❌ {error_msg}")
             logger.error(f"   Dataset slug: {dataset_slug}")
             logger.error(f"   Check: 1) Kaggle credentials, 2) Dataset exists, 3) Network connection")
-            return {
-                "status": "error",
-                "error_message": error_msg,
-                "dataset_slug": dataset_slug,
-                "folder_path": abs_download_path,
-                "csv_files": [],
-                "schemas": {},
-                "metadata": {
-                    "timestamp": datetime.now().isoformat(),
-                    "error_step": "download"
-                }
-            }
+            return _create_error_response(error_msg, "download", dataset_slug=dataset_slug, folder_path=abs_download_path)
         
         logger.info("📊 Analyzing downloaded files...")
         csv_files = [f for f in os.listdir(abs_download_path) 
@@ -129,6 +107,7 @@ def fetch_kaggle_dataset(kaggle_link: str, download_path: str = "./datasets") ->
                 error_msg = f"Failed to read {csv_file}: {str(e)}"
                 logger.warning(f"      ⚠️  {error_msg}")
                 schemas[csv_file] = {"error": error_msg}
+                return _create_error_response(error_msg, "read", dataset_slug=dataset_slug, folder_path=abs_download_path, csv_file=csv_file)
         
         elapsed_time = (datetime.now() - start_time).total_seconds()
         logger.info(f"🎉 Dataset processing complete in {elapsed_time:.2f}s")
@@ -154,18 +133,7 @@ def fetch_kaggle_dataset(kaggle_link: str, download_path: str = "./datasets") ->
         # Catch-all for unexpected errors
         error_msg = f"Unexpected error: {str(e)}"
         logger.exception(f"❌ {error_msg}")
-        return {
-            "status": "error",
-            "error_message": error_msg,
-            "dataset_slug": None,
-            "folder_path": download_path,
-            "csv_files": [],
-            "schemas": {},
-            "metadata": {
-                "timestamp": datetime.now().isoformat(),
-                "error_step": "unexpected"
-            }
-        }
+        return _create_error_response(error_msg, "unexpected", dataset_slug=None, folder_path=download_path)
 
 
 def _extract_dataset_slug(kaggle_link: str) -> str:
@@ -191,3 +159,19 @@ def _extract_dataset_slug(kaggle_link: str) -> str:
         
     except Exception as e:
         raise ValueError(f"Failed to parse Kaggle URL '{kaggle_link}': {str(e)}")
+
+def _create_error_response(error_msg: str, error_step: str, **kwargs) -> dict:
+    """Helper to create consistent error responses."""
+    logger.error(f"❌ {error_msg}")
+    return {
+        "status": "error",
+        "error_message": error_msg,
+        "dataset_slug": kwargs.get('dataset_slug'),
+        "folder_path": kwargs.get('folder_path'),
+        "csv_files": [],
+        "schemas": {},
+        "metadata": {
+            "timestamp": datetime.now().isoformat(),
+            "error_step": error_step
+        }
+    }
