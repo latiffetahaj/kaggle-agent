@@ -34,7 +34,6 @@ def fetch_kaggle_dataset(kaggle_link: str, download_path: str = "./datasets") ->
                 "status": "ok" or "error",
                 "folder_path": str,  # Absolute path to downloaded dataset
                 "csv_files": List[str],  # List of CSV filenames found
-                "schemas": Dict[str, Dict],  # Schema info per CSV file
                 "dataset_slug": str,  # Extracted dataset identifier
                 "error_message": str (optional),  # Present if status="error"
                 "metadata": {  # Additional context
@@ -86,44 +85,27 @@ def fetch_kaggle_dataset(kaggle_link: str, download_path: str = "./datasets") ->
             return _create_error_response(error_msg, "download", dataset_slug=dataset_slug, folder_path=abs_download_path)
         
         logger.info("📊 Analyzing downloaded files...")
-        csv_files = [f for f in os.listdir(abs_download_path) 
-                    if f.endswith(".csv")]
+        csv_files = []
+        for root, _, files in os.walk(abs_download_path):
+            for fname in files:
+                if fname.lower().endswith(".csv"):
+                    rel_path = os.path.relpath(os.path.join(root, fname), abs_download_path)
+                    csv_files.append(rel_path)
         
         if not csv_files:
             logger.warning("⚠️  No CSV files found in downloaded dataset")
         else:
             logger.info(f"✅ Found {len(csv_files)} CSV file(s)")
         
-        schemas = {}
-        for idx, csv_file in enumerate(csv_files, 1):
-            logger.info(f"   Analyzing {idx}/{len(csv_files)}: {csv_file}")
-            try:
-                file_path = os.path.join(abs_download_path, csv_file)
-                df = pd.read_csv(file_path, nrows=5)
-                schema = df.dtypes.astype(str).to_dict()
-                schemas[csv_file] = schema
-                logger.info(f"      ✅ Schema extracted: {len(schema)} columns")
-            except Exception as e:
-                error_msg = f"Failed to read {csv_file}: {str(e)}"
-                logger.warning(f"      ⚠️  {error_msg}")
-                schemas[csv_file] = {"error": error_msg}
-                return _create_error_response(error_msg, "read", dataset_slug=dataset_slug, folder_path=abs_download_path, csv_file=csv_file)
-        
-        elapsed_time = (datetime.now() - start_time).total_seconds()
-        logger.info(f"🎉 Dataset processing complete in {elapsed_time:.2f}s")
-        logger.info(f"   Total CSV files: {len(csv_files)}")
-        logger.info(f"   Location: {abs_download_path}")
-        
+        #zip_info = zip_folder_to_base64(abs_download_path, abs_download_path + ".zip", max_files=5)
         result = {
             "status": "ok",
             "folder_path": abs_download_path,
             "csv_files": csv_files,
-            "schemas": schemas,
             "dataset_slug": dataset_slug,
             "metadata": {
-                "total_files": len(csv_files),
                 "timestamp": datetime.now().isoformat(),
-                "elapsed_seconds": round(elapsed_time, 2)
+                "total_files": len(csv_files)
             }
         }
         
