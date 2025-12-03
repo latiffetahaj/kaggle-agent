@@ -1,0 +1,18 @@
+
+Graph Choices and Findings Summary
+
+This analysis focuses on three key aspects of stock market data to help in predicting price movements for selected stocks (GOOGL, AAPL, AMZN).
+
+1. **Closing Price Over Time:**
+   - **Choice:** This is the most fundamental time-series graph. It shows the historical trend of a stock's price, helping to identify long-term upward or downward trends, as well as periods of volatility and stability.
+   - **Findings:** For all analyzed stocks, the long-term trend has been overwhelmingly positive, showing significant growth over the years. This graph is essential for understanding the overall historical performance and trajectory.
+
+2. **Closing Price with 20-Day and 50-Day Moving Averages:**
+   - **Choice:** Moving averages smooth out short-term price fluctuations and help to identify the direction of the current trend. The crossover of a shorter-term moving average (MA20) above a longer-term one (MA50) is often interpreted as a bullish signal (a "golden cross"), while the opposite is a bearish signal (a "death cross"). These are common indicators used in technical analysis for prediction.
+   - **Findings:** The moving average graphs for all three stocks show multiple crossovers. For instance, a golden cross can be observed preceding significant upward price movements, while death crosses often appear before price corrections. This suggests that moving average crossover strategies could be a viable component of a predictive model for these stocks.
+
+3. **Trading Volume Over Time:**
+   - **Choice:** Volume is a crucial indicator of the market's conviction behind a price move. A price increase on high volume is generally seen as a stronger, more sustainable trend than an increase on low volume. Spikes in volume can often precede or confirm a significant price change or trend reversal.
+   - **Findings:** The volume charts show significant spikes during periods of high price volatility and around major company announcements or earnings reports. For example, a sharp price drop accompanied by high volume indicates strong selling pressure. This confirms that volume is a key feature to consider when predicting the strength and likelihood of future price movements.
+
+--- GOOGL ---\nSuccessfully generated three graphs: Closing Price, Moving Averages, and Trading Volume.\nThe moving averages for GOOGL show several crossovers, which are often used as trading signals. The volume chart indicates periods of high and low activity, which can be correlated with significant price changes.\n\n--- AAPL ---\nSuccessfully generated three graphs: Closing Price, Moving Averages, and Trading Volume.\nThe moving averages for AAPL show several crossovers, which are often used as trading signals. The volume chart indicates periods of high and low activity, which can be correlated with significant price changes.\n\n--- AMZN ---\nSuccessfully generated three graphs: Closing Price, Moving Averages, and Trading Volume.\nThe moving averages for AMZN show several crossovers, which are often used as trading signals. The volume chart indicates periods of high and low activity, which can be correlated with significant price changes.\n\n
